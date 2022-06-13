@@ -47,7 +47,7 @@ class JobManager
 
     public function findJob($command, array $args = array())
     {
-        return $this->getJobManager()->createQuery("SELECT j FROM ". Job::class ." j WHERE j.command = :command AND j.args = :args")
+        return $this->getJobManager()->createQuery("SELECT j FROM " . Job::class . " j WHERE j.command = :command AND j.args = :args")
             ->setParameter('command', $command)
             ->setParameter('args', $args, Type::JSON_ARRAY)
             ->setMaxResults(1)
@@ -73,7 +73,7 @@ class JobManager
         $this->getJobManager()->persist($job);
         $this->getJobManager()->flush($job);
 
-        $firstJob = $this->getJobManager()->createQuery("SELECT j FROM ". Job::class ." j WHERE j.command = :command AND j.args = :args ORDER BY j.id ASC")
+        $firstJob = $this->getJobManager()->createQuery("SELECT j FROM " . Job::class . " j WHERE j.command = :command AND j.args = :args ORDER BY j.id ASC")
              ->setParameter('command', $command)
              ->setParameter('args', $args, 'json_array')
              ->setMaxResults(1)
@@ -360,7 +360,7 @@ class JobManager
             return array();
         }
 
-        return $this->getJobManager()->createQuery("SELECT j, d FROM ". Job::class ." j LEFT JOIN j.dependencies d WHERE j.id IN (:ids)")
+        return $this->getJobManager()->createQuery("SELECT j, d FROM " . Job::class . " j LEFT JOIN j.dependencies d WHERE j.id IN (:ids)")
                     ->setParameter('ids', $jobIds)
                     ->getResult();
     }
@@ -375,7 +375,7 @@ class JobManager
             return array();
         }
 
-        return $this->getJobManager()->createQuery("SELECT j FROM ". Job::class ." j WHERE j.id IN (:ids)")
+        return $this->getJobManager()->createQuery("SELECT j FROM " . Job::class . " j WHERE j.id IN (:ids)")
                     ->setParameter('ids', $jobIds)
                     ->getResult();
     }
@@ -391,7 +391,7 @@ class JobManager
 
     public function findLastJobsWithError($nbJobs = 10)
     {
-        return $this->getJobManager()->createQuery("SELECT j FROM ". Job::class ." j WHERE j.state IN (:errorStates) AND j.originalJob IS NULL ORDER BY j.closedAt DESC")
+        return $this->getJobManager()->createQuery("SELECT j FROM " . Job::class . " j WHERE j.state IN (:errorStates) AND j.originalJob IS NULL ORDER BY j.closedAt DESC")
                     ->setParameter('errorStates', array(Job::STATE_TERMINATED, Job::STATE_FAILED))
                     ->setMaxResults($nbJobs)
                     ->getResult();
@@ -399,7 +399,7 @@ class JobManager
 
     public function getAvailableQueueList()
     {
-        $queues =  $this->getJobManager()->createQuery("SELECT DISTINCT j.queue FROM ". Job::class ." j WHERE j.state IN (:availableStates)  GROUP BY j.queue")
+        $queues =  $this->getJobManager()->createQuery("SELECT DISTINCT j.queue FROM " . Job::class . " j WHERE j.state IN (:availableStates)  GROUP BY j.queue")
             ->setParameter('availableStates', array(Job::STATE_RUNNING, Job::STATE_NEW, Job::STATE_PENDING))
             ->getResult();
 
@@ -416,7 +416,7 @@ class JobManager
 
     public function getAvailableJobsForQueueCount($jobQueue)
     {
-        $result = $this->getJobManager()->createQuery("SELECT j.queue FROM ". Job::class ." j WHERE j.state IN (:availableStates) AND j.queue = :queue")
+        $result = $this->getJobManager()->createQuery("SELECT j.queue FROM " . Job::class . " j WHERE j.state IN (:availableStates) AND j.queue = :queue")
             ->setParameter('availableStates', array(Job::STATE_RUNNING, Job::STATE_NEW, Job::STATE_PENDING))
             ->setParameter('queue', $jobQueue)
             ->setMaxResults(1)
