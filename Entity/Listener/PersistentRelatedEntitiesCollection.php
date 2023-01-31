@@ -32,6 +32,28 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
     }
 
     /**
+     * Ported from ArrayCollection
+     */
+    public function findFirst(Closure $p)
+    {
+        foreach ($this->entities as $key => $entity) {
+            if ($p($key, $entity)) {
+                return $entity;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Ported from ArrayCollection
+     */
+    public function reduce(Closure $func, mixed $initial = null)
+    {
+        return array_reduce($this->entities, $func, $initial);
+    }
+
+    /**
      * Gets the PHP array representation of this collection.
      *
      * @return array<object> The PHP array representation of this collection.
