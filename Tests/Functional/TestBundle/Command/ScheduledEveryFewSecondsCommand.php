@@ -10,7 +10,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ScheduledEveryFewSecondsCommand extends Command implements CronCommand
 {
-    protected static $defaultName = 'scheduled-every-few-seconds';
+    public function __construct(?string $name = null)
+    {
+        parent::__construct();
+
+        $this->setName($name ?? 'scheduled-every-few-seconds');
+    }
 
     public function shouldBeScheduled(\DateTime $lastRunAt): bool
     {
@@ -22,7 +27,7 @@ class ScheduledEveryFewSecondsCommand extends Command implements CronCommand
         return new Job('scheduled-every-few-seconds');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Done');
     }

@@ -17,8 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ScheduleCommand extends Command
 {
-    protected static $defaultName = 'jms-job-queue:schedule';
-
     private $registry;
     private $schedulers;
     private $cronCommands;
@@ -27,12 +25,13 @@ class ScheduleCommand extends Command
     {
         parent::__construct();
 
+        $this->setName('jms-job-queue:schedule');
         $this->registry = $managerRegistry;
         $this->schedulers = $schedulers;
         $this->cronCommands = $cronCommands;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Schedules jobs at defined intervals')
@@ -41,7 +40,7 @@ class ScheduleCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $maxRuntime = $input->getOption('max-runtime');
         if ($maxRuntime > 300) {

@@ -14,8 +14,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CleanUpCommand extends Command
 {
-    protected static $defaultName = 'jms-job-queue:clean-up';
-
     private $jobManager;
     private $registry;
 
@@ -23,11 +21,12 @@ class CleanUpCommand extends Command
     {
         parent::__construct();
 
+        $this->setName('jms-job-queue:clean-up');
         $this->jobManager = $jobManager;
         $this->registry = $registry;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Cleans up jobs which exceed the maximum retention time.')
@@ -37,7 +36,7 @@ class CleanUpCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var EntityManager $em */
         $em = $this->registry->getManagerForClass(Job::class);
