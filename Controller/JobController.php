@@ -7,20 +7,17 @@ use Doctrine\ORM\EntityManager;
 use JMS\JobQueueBundle\Entity\Job;
 use JMS\JobQueueBundle\Entity\Repository\JobManager;
 use JMS\JobQueueBundle\View\JobFilter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route as RouteAnnotation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class JobController extends AbstractController
 {
-    /**
-     * @RouteAnnotation("/", name = "jms_jobs_overview")
-     */
     #[Route('/', name: 'jms_jobs_overview')]
-    public function overviewAction(Request $request)
+    public function overviewAction(Request $request): Response
     {
         $jobFilter = JobFilter::fromRequest($request);
 
@@ -65,11 +62,8 @@ class JobController extends AbstractController
         ));
     }
 
-    /**
-     * @RouteAnnotation("/{id}", name = "jms_jobs_details")
-     */
     #[Route('/{id}', name: 'jms_jobs_details')]
-    public function detailsAction(Job $job)
+    public function detailsAction(Job $job): Response
     {
         $relatedEntities = array();
         foreach ($job->getRelatedEntities() as $entity) {
@@ -127,11 +121,8 @@ class JobController extends AbstractController
         ));
     }
 
-    /**
-     * @RouteAnnotation("/{id}/retry", name = "jms_jobs_retry_job")
-     */
     #[Route('/{id}/retry', name: 'jms_jobs_retry_job')]
-    public function retryJobAction(Job $job)
+    public function retryJobAction(Job $job): RedirectResponse
     {
         $state = $job->getState();
 
