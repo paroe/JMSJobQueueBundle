@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name = "jms_cron_jobs")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ORM\MappedSuperclass
  */
 class CronJob
 {

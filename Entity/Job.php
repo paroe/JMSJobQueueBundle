@@ -31,6 +31,7 @@ use Symfony\Component\ErrorHandler\Exception\FlattenException;
  *     @ORM\Index("sorting_index", columns = {"state", "priority", "id"}),
  * })
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ORM\MappedSuperclass
  *
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
