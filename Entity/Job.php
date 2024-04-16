@@ -100,7 +100,7 @@ class Job
     #[ORM\Column(type: "string", length: Job::MAX_QUEUE_LENGTH)]
     private $queue;
 
-    #[ORM\Column(type: "smallint", options: ["unsigned" => true])]
+    #[ORM\Column(type: "smallint")]
     private $priority = 0;
 
     #[ORM\Column(name: "createdAt", type: "datetime")]
