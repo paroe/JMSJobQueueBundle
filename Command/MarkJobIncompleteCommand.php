@@ -18,9 +18,8 @@ class MarkJobIncompleteCommand extends Command
 
     public function __construct(ManagerRegistry $managerRegistry, JobManager $jobManager)
     {
-        parent::__construct();
+        parent::__construct('jms-job-queue:mark-incomplete');
 
-        $this->setName('jms-job-queue:mark-incomplete');
         $this->registry = $managerRegistry;
         $this->jobManager = $jobManager;
     }

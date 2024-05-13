@@ -67,9 +67,8 @@ class RunCommand extends Command
 
     public function __construct(ManagerRegistry $managerRegistry, JobManager $jobManager, EventDispatcherInterface $dispatcher, array $queueOptionsDefault, array $queueOptions)
     {
-        parent::__construct();
+        parent::__construct('jms-job-queue:run');
 
-        $this->setName('jms-job-queue:run');
         $this->registry = $managerRegistry;
         $this->jobManager = $jobManager;
         $this->dispatcher = $dispatcher;

@@ -23,9 +23,8 @@ class ScheduleCommand extends Command
 
     public function __construct(ManagerRegistry $managerRegistry, iterable $schedulers, iterable $cronCommands)
     {
-        parent::__construct();
+        parent::__construct('jms-job-queue:schedule');
 
-        $this->setName('jms-job-queue:schedule');
         $this->registry = $managerRegistry;
         $this->schedulers = $schedulers;
         $this->cronCommands = $cronCommands;

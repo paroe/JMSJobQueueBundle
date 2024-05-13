@@ -19,9 +19,8 @@ class CleanUpCommand extends Command
 
     public function __construct(ManagerRegistry $registry, JobManager $jobManager)
     {
-        parent::__construct();
+        parent::__construct('jms-job-queue:clean-up');
 
-        $this->setName('jms-job-queue:clean-up');
         $this->jobManager = $jobManager;
         $this->registry = $registry;
     }
