@@ -84,11 +84,8 @@ class Application extends BaseApplication
             return;
         }
 
-        try {
-            $trace = json_encode($ex ? FlattenException::create($ex)->toArray() : null, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
-            $trace = null;
-        }
+        // temporarily do not save any stack traces
+        $trace = null;
 
         $this->getConnection()->executeUpdate(
             "UPDATE jms_jobs SET stackTrace = :trace, memoryUsage = :memoryUsage, memoryUsageReal = :memoryUsageReal WHERE id = :id",
