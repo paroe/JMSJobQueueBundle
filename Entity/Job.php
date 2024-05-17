@@ -553,7 +553,7 @@ class Job
     }
 
     /**
-     * @return Collection<Job>
+     * @return Collection<array-key, Job>
      */
     public function getRetryJobs(): Collection
     {
