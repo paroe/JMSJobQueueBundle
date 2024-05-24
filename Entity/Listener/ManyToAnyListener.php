@@ -2,6 +2,7 @@
 
 namespace JMS\JobQueueBundle\Entity\Listener;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\Persistence\ManagerRegistry;
 use JMS\JobQueueBundle\Entity\Job;
 
 /**
@@ -16,14 +17,13 @@ use JMS\JobQueueBundle\Entity\Job;
  */
 class ManyToAnyListener
 {
-    private $registry;
     private $ref;
 
-    public function __construct(\Doctrine\Persistence\ManagerRegistry $registry)
+    public function __construct(
+        private readonly ManagerRegistry $registry
+    )
     {
-        $this->registry = $registry;
-        $this->ref = new \ReflectionProperty('JMS\JobQueueBundle\Entity\Job', 'relatedEntities');
-        $this->ref->setAccessible(true);
+        $this->ref = new \ReflectionProperty(Job::class, 'relatedEntities');
     }
 
     public function postLoad(\Doctrine\ORM\Event\LifecycleEventArgs $event)
@@ -44,7 +44,7 @@ class ManyToAnyListener
         }
 
         $con = $event->getEntityManager()->getConnection();
-        $con->executeUpdate("DELETE FROM jms_job_related_entities WHERE job_id = :id", array(
+        $con->executeStatement("DELETE FROM jms_job_related_entities WHERE job_id = :id", array(
             'id' => $entity->getId(),
         ));
     }
@@ -66,7 +66,7 @@ class ManyToAnyListener
                 throw new \RuntimeException('The identifier for the related entity "'.$relClass.'" was empty.');
             }
 
-            $con->executeUpdate("INSERT INTO jms_job_related_entities (job_id, related_class, related_id) VALUES (:jobId, :relClass, :relId)", array(
+            $con->executeStatement("INSERT INTO jms_job_related_entities (job_id, related_class, related_id) VALUES (:jobId, :relClass, :relId)", array(
                 'jobId' => $entity->getId(),
                 'relClass' => $relClass,
                 'relId' => json_encode($relId),

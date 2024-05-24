@@ -22,14 +22,13 @@ use Traversable;
  */
 class PersistentRelatedEntitiesCollection implements Collection, Selectable
 {
-    private $registry;
-    private $job;
-    private $entities;
+    private ?array $entities = null;
 
-    public function __construct(ManagerRegistry $registry, Job $job)
+    public function __construct(
+        private readonly ManagerRegistry $registry,
+        private readonly Job $job
+    )
     {
-        $this->registry = $registry;
-        $this->job = $job;
     }
 
     /**
@@ -517,7 +516,7 @@ class PersistentRelatedEntitiesCollection implements Collection, Selectable
         $con = $this->registry->getManagerForClass(Job::class)->getConnection();
         $entitiesPerClass = array();
         $count = 0;
-        foreach ($con->query("SELECT related_class, related_id FROM jms_job_related_entities WHERE job_id = ".$this->job->getId()) as $data) {
+        foreach ($con->executeQuery("SELECT related_class, related_id FROM jms_job_related_entities WHERE job_id = ".$this->job->getId())->fetchAllAssociative() as $data) {
             $count += 1;
             $entitiesPerClass[$data['related_class']][] = json_decode($data['related_id'], true);
         }

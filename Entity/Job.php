@@ -377,7 +377,7 @@ class Job
         return self::isNonSuccessfulFinalState($this->state);
     }
 
-    public function findRelatedEntity($class): null
+    public function findRelatedEntity($class): ?object
     {
         foreach ($this->relatedEntities as $entity) {
             if ($entity instanceof $class) {

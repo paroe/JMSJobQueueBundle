@@ -26,6 +26,6 @@ class LoggingCommand extends Command
         sleep($input->getOption('runtime'));
         file_put_contents($input->getArgument('file'), $input->getArgument('name').' stopped'.PHP_EOL, FILE_APPEND);
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

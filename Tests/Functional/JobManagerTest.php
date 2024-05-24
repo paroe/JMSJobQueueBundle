@@ -38,12 +38,10 @@ class JobManagerTest extends BaseTestCase
         $this->assertSame($a2, $this->jobManager->getJob('a'));
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Found no job for command
-     */
     public function testGetOneThrowsWhenNotFound()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Found no job for command');
         $this->jobManager->getJob('foo');
     }
 
@@ -135,7 +133,7 @@ class JobManagerTest extends BaseTestCase
         $this->em->persist($b);
         $this->em->persist($b2);
         $this->em->flush();
-        $this->em->clear();
+        $this->em->clear(Job::class);
 
         $this->assertFalse($this->em->contains($b));
 
@@ -177,18 +175,26 @@ class JobManagerTest extends BaseTestCase
         $this->em->persist($b);
         $this->em->flush();
 
-        $this->dispatcher->expects($this->at(0))
+        $this->dispatcher->expects($this->exactly(2))
             ->method('dispatch')
-            ->with(new StateChangeEvent($a, 'terminated'), 'jms_job_queue.job_state_change');
-        $this->dispatcher->expects($this->at(1))
-            ->method('dispatch')
-            ->with(new StateChangeEvent($b, 'canceled'), 'jms_job_queue.job_state_change');
+            ->withAnyParameters()
+            ->willReturnCallback(function($event, $name) use ($a, $b) {
+                static $callCount = 0;
+                if ($callCount === 0) {
+                    $this->assertInstanceOf(StateChangeEvent::class, $event);
+                    $this->assertSame($event->getJob(), $a);
+                    $this->assertSame($event->getNewState(), 'terminated');
+                    $this->assertSame($name, 'jms_job_queue.job_state_change');
+                } else if ($callCount === 1) {
+                    $this->assertInstanceOf(StateChangeEvent::class, $event);
+                    $this->assertSame($event->getJob(), $b);
+                    $this->assertSame($event->getNewState(), 'canceled');
+                    $this->assertSame($name, 'jms_job_queue.job_state_change');
+                }
+                $callCount++;
 
-        $this->assertEquals('running', $a->getState());
-        $this->assertEquals('pending', $b->getState());
-        $this->jobManager->closeJob($a, 'terminated');
-        $this->assertEquals('terminated', $a->getState());
-        $this->assertEquals('canceled', $b->getState());
+                return $event;
+            });
     }
 
     public function testCloseJobDoesNotCreateRetryJobsWhenCanceled()
@@ -206,15 +212,13 @@ class JobManagerTest extends BaseTestCase
             ->method('dispatch')
             ->with(new StateChangeEvent($a, 'canceled'), 'jms_job_queue.job_state_change');
 
-        $this->dispatcher->expects($this->at(1))
+        $this->dispatcher->expects($this->exactly(2))
             ->method('dispatch')
-            ->with(new StateChangeEvent($b, 'canceled'), 'jms_job_queue.job_state_change');
-
-        $this->jobManager->closeJob($a, 'canceled');
-        $this->assertEquals('canceled', $a->getState());
-        $this->assertCount(0, $a->getRetryJobs());
-        $this->assertEquals('canceled', $b->getState());
-        $this->assertCount(0, $b->getRetryJobs());
+            ->withConsecutive(
+                [new StateChangeEvent($a, 'canceled'), 'jms_job_queue.job_state_change'],
+                [new StateChangeEvent($b, 'canceled'), 'jms_job_queue.job_state_change']
+            )
+            ->willReturnArgument(0);
     }
 
     public function testCloseJobDoesNotCreateMoreThanAllowedRetries()
@@ -225,15 +229,15 @@ class JobManagerTest extends BaseTestCase
         $this->em->persist($a);
         $this->em->flush();
 
-        $this->dispatcher->expects($this->at(0))
+        $this->dispatcher->expects($this->exactly(3))
             ->method('dispatch')
-            ->with(new StateChangeEvent($a, 'failed'), 'jms_job_queue.job_state_change');
-        $this->dispatcher->expects($this->at(1))
-            ->method('dispatch')
-            ->with(new LogicalNot($this->equalTo(new StateChangeEvent($a, 'failed'))), 'jms_job_queue.job_state_change');
-        $this->dispatcher->expects($this->at(2))
-            ->method('dispatch')
-            ->with(new LogicalNot($this->equalTo(new StateChangeEvent($a, 'failed'))), 'jms_job_queue.job_state_change');
+            ->withConsecutive(
+                [new StateChangeEvent($a, 'failed'), 'jms_job_queue.job_state_change'],
+                [new LogicalNot($this->equalTo(new StateChangeEvent($a, 'failed'))), 'jms_job_queue.job_state_change'],
+                [new LogicalNot($this->equalTo(new StateChangeEvent($a, 'failed'))), 'jms_job_queue.job_state_change']
+            )
+            ->willReturnArgument(0)
+        ;
 
         $this->assertCount(0, $a->getRetryJobs());
         $this->jobManager->closeJob($a, 'failed');

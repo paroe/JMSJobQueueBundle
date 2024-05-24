@@ -31,6 +31,6 @@ class ScheduledEveryFewSecondsCommand extends Command implements CronCommand
     {
         $output->writeln('Done');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
