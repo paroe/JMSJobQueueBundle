@@ -178,6 +178,9 @@ class Job
      */
     private Collection $relatedEntities;
 
+    /**
+     * @param array<int, mixed> $args
+     */
     public static function create($command, array $args = array(), $confirmed = true, $queue = self::DEFAULT_QUEUE, $priority = self::PRIORITY_DEFAULT): Job
     {
         return new self($command, $args, $confirmed, $queue, $priority);
@@ -202,6 +205,9 @@ class Job
         );
     }
 
+    /**
+     * @param array<int, mixed> $args
+     */
     public function __construct($command, array $args = array(), $confirmed = true, $queue = self::DEFAULT_QUEUE, $priority = self::PRIORITY_DEFAULT)
     {
         if (trim($queue) === '') {
