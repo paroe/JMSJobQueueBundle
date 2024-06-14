@@ -126,7 +126,7 @@
 
 {% if job.stackTrace is not empty %}
 <h3>Stack Trace</h3>
-{% for index, exception in job.stackTrace.toarray %}
+{% for index, exception in job.stackTrace %}
     <div class="trace trace-as-html">
         <div class="trace-details">
             <div class="trace-head">

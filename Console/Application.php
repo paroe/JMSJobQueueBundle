@@ -38,7 +38,7 @@ class Application extends BaseApplication
         }
     }
 
-    public function doRun(InputInterface $input, OutputInterface $output)
+    public function doRun(InputInterface $input, OutputInterface $output): int
     {
         $this->input = $input;
 
@@ -84,13 +84,19 @@ class Application extends BaseApplication
             return;
         }
 
+        try {
+            $trace = json_encode($ex ? FlattenException::create($ex)->toArray() : null, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            $trace = null;
+        }
+
         $this->getConnection()->executeUpdate(
             "UPDATE jms_jobs SET stackTrace = :trace, memoryUsage = :memoryUsage, memoryUsageReal = :memoryUsageReal WHERE id = :id",
             array(
                 'id' => $jobId,
                 'memoryUsage' => memory_get_peak_usage(),
                 'memoryUsageReal' => memory_get_peak_usage(true),
-                'trace' => serialize($ex ? FlattenException::create($ex) : null),
+                'trace' => $trace,
             ),
             array(
                 'id' => \PDO::PARAM_INT,

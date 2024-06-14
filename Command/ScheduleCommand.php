@@ -17,22 +17,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ScheduleCommand extends Command
 {
-    protected static $defaultName = 'jms-job-queue:schedule';
-
-    private $registry;
-    private $schedulers;
-    private $cronCommands;
-
-    public function __construct(ManagerRegistry $managerRegistry, iterable $schedulers, iterable $cronCommands)
+    /**
+     * @param ManagerRegistry        $registry
+     * @param iterable<JobScheduler> $schedulers
+     * @param iterable<CronCommand>  $cronCommands
+     */
+    public function __construct(
+        private readonly ManagerRegistry $registry,
+        private readonly iterable $schedulers,
+        private readonly iterable $cronCommands
+    )
     {
-        parent::__construct();
-
-        $this->registry = $managerRegistry;
-        $this->schedulers = $schedulers;
-        $this->cronCommands = $cronCommands;
+        parent::__construct('jms-job-queue:schedule');
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Schedules jobs at defined intervals')
@@ -41,7 +40,7 @@ class ScheduleCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $maxRuntime = $input->getOption('max-runtime');
         if ($maxRuntime > 300) {
@@ -98,7 +97,7 @@ class ScheduleCommand extends Command
                 continue;
             }
 
-            list($success, $newLastRunAt) = $this->acquireLock($name, $lastRunAt);
+            [$success, $newLastRunAt] = $this->acquireLock($name, $lastRunAt);
             $jobsLastRunAt[$name] = $newLastRunAt;
 
             if ($success) {
@@ -148,14 +147,12 @@ class ScheduleCommand extends Command
     {
         $schedulers = [];
         foreach ($this->schedulers as $scheduler) {
-            /** @var JobScheduler $scheduler */
             foreach ($scheduler->getCommands() as $name) {
                 $schedulers[$name] = $scheduler;
             }
         }
 
         foreach ($this->cronCommands as $command) {
-            /** @var CronCommand $command */
             if ( ! $command instanceof Command) {
                 throw new \RuntimeException('CronCommand should only be used on Symfony commands.');
             }

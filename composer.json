@@ -15,11 +15,11 @@
         }
     ],
     "require": {
-        "php": "^7.3 || ^8.0",
-        "symfony/framework-bundle": "^5.0",
-        "symfony/error-handler": "^5.0",
+        "php": "^8.2",
+        "symfony/framework-bundle": "^5.0 || ^6.0 || ^7.0",
+        "symfony/error-handler": "^5.0 || ^6.0 || ^7.0",
         "doctrine/common": "^3.0",
-        "symfony/process": "^5.0"
+        "symfony/process": "^5.0 || ^6.0 || ^7.0"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "*",
@@ -34,7 +34,7 @@
         "symfony/twig-bundle": "*",
         "symfony/form": "*",
         "symfony/validator": "*",
-        "phpunit/phpunit": "^6.0",
+        "phpunit/phpunit": "^9.6",
         "symfony/intl": "*"
     },
     "suggest": {

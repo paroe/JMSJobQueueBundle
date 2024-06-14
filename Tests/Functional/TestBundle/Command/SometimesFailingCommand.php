@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 
 class SometimesFailingCommand extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('jms-job-queue:sometimes-failing-cmd')
@@ -17,7 +17,7 @@ class SometimesFailingCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $expired = time() - $input->getArgument('time');
 
