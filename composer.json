@@ -19,7 +19,8 @@
         "symfony/framework-bundle": "^5.0 || ^6.0 || ^7.0",
         "symfony/error-handler": "^5.0 || ^6.0 || ^7.0",
         "doctrine/common": "^3.0",
-        "symfony/process": "^5.0 || ^6.0 || ^7.0"
+        "symfony/process": "^5.0 || ^6.0 || ^7.0",
+        "symfony/lock": "^7.1"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "*",
