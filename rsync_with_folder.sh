@@ -49,6 +49,6 @@ echo "Press Ctrl+C to stop this script.\n"
 # Copy the files to DEST until the user stops the script
 while true
 do
-    rsync -avz --exclude '.git' --exclude 'vendor' --exclude 'node_modules' ./* $DEST
+    rsync -avz --exclude '.git' --exclude 'node_modules' ./* $DEST
     sleep $SPEED
 done
