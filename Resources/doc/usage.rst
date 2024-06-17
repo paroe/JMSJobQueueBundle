@@ -11,7 +11,7 @@ Creating jobs is super simple, you just need to persist an instance of ``Job``:
 
     $job = new Job('my-symfony2:command', array('some-args', 'or', '--options="foo"'));
     $em->persist($job);
-    $em->flush($job);
+    $em->flush();
 
 Adding Dependencies Between Jobs
 ================================
@@ -59,7 +59,7 @@ If you want to schedule a job :
     $job->setExecuteAfter($date);
     $em->persist($job);
     $em->flush();
-    
+
 Fine-grained Concurrency Control through Queues
 ===============================================
 If you would like to better control the concurrency of a specific job type, you can use queues:

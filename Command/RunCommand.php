@@ -327,7 +327,7 @@ class RunCommand extends Command
                 $data['job']->checked();
                 $em = $this->getEntityManager();
                 $em->persist($data['job']);
-                $em->flush($data['job']);
+                $em->flush();
 
                 continue;
             }
@@ -370,7 +370,7 @@ class RunCommand extends Command
         $job->setState(Job::STATE_RUNNING);
         $em = $this->getEntityManager();
         $em->persist($job);
-        $em->flush($job);
+        $em->flush();
 
         $args = $this->getBasicCommandLineArgs();
         $args[] = $job->getCommand();
